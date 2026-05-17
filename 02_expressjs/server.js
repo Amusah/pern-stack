@@ -6,6 +6,12 @@ const port = 3000;
 const router = express.Router();
 app.use(express.json());
 
+app.use((req, res, next) => {
+  const timeStamp = new Date().toISOString();
+  console.log(`[${timeStamp}] ${req.method} ${req.url}`);
+  next();
+})
+
 let cars = [
   { id: 1, make: "Toyota", model: "Camry", year: 2022, price: 28000 },
   { id: 2, make: "Tesla", model: "Model S", year: 2023, price: 25000 },
@@ -68,11 +74,19 @@ router.put("/:id", (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
-  res.send("Delete car");
-});
+  const id = +req.params.id;
+  const index = cars.findIndex(c => c.id === id);
 
+  if(index === -1){
+    return res.status(404).json({ error: 'Car not found'});
+  }
+
+  const deleted = cars.splice(index, 1)[0];
+  res.json({ message: "Car deleted", car: deleted});
+});
+   
 app.use("/api/v1/cars", router);
 
 app.listen(port, () =>
-  console.log(`Server is running on http://localhost:${port}`),
+  console.log(`Server is running on http://localhost:${port}`)
 );
