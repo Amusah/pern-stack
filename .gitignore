@@ -2,4 +2,3 @@ node_modules
 package-lock.sh
 package-lock.json
 .env
-04_reactjs
